@@ -1,2 +1,2 @@
 export * from "./FormInput";
-export * from "./FormIcon";
+export * from "./ErrorBox";

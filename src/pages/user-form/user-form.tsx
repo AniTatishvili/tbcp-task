@@ -1,7 +1,9 @@
+import { FormSteps } from "../../widgets/form-steps";
+
 export const UserForm = () => {
   return (
-    <div>
-      <div></div>
+    <div className="bg-red">
+      <FormSteps />
     </div>
   );
 };
