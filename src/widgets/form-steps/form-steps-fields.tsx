@@ -3,19 +3,33 @@ import { FormInput } from "../../shared/form";
 
 type FormStepsFieldsProps = {
   step: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: any;
   errors: FieldErrors;
 };
 
+const formFields = [
+  {
+    name: "username",
+    type: "text",
+    label: "Username",
+  },
+  {
+    name: "password",
+    type: "password",
+    label: "Password",
+  },
+  {
+    name: "email",
+    type: "email",
+    label: "Email",
+  },
+];
+
 export const FormStepsFields: React.FC<FormStepsFieldsProps> = ({ step, register, errors }) => {
-  switch (step) {
-    case 1:
-      return <FormInput type="text" register={register} name="username" label="Username" error={errors.username?.message as string | undefined} />;
-    case 2:
-      return <FormInput type="password" register={register} name="password" label="Password" error={errors.password?.message as string | undefined} />;
-    case 3:
-      return <FormInput type="email" register={register} name="email" label="Email" error={errors.email?.message as string | undefined} />;
-    default:
-      return null;
-  }
+  const field = formFields[step - 1];
+
+  if (!field) return null;
+
+  return <FormInput type={field.type} register={register} name={field.name} label={field.label} error={errors[field.name]?.message as string | undefined} />;
 };
