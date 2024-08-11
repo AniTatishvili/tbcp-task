@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 import { TiHome } from "react-icons/ti";
 
-import { Logotype } from "../../shared/ui/logotype/logotype";
+import { Logotype } from "../../shared/ui/logotype";
 
 export const Header = () => {
   return (

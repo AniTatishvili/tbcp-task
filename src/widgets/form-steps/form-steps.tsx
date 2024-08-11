@@ -1,26 +1,27 @@
 import React from "react";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { z } from "zod";
 
 import { useFormStore } from "../../app/providers/store";
-
 import { usernameSchema, passwordSchema, emailSchema } from "../../shared/form/zod";
 
 import { Toast } from "../../shared/toast";
-import { FormInput } from "../../shared/form";
 import { FormStepsButtons } from "./form-steps-buttons";
+import { FormStepsFields } from "./form-steps-fields";
 
 type UsernameSchema = z.infer<typeof usernameSchema>;
 type PasswordSchema = z.infer<typeof passwordSchema>;
 type EmailSchema = z.infer<typeof emailSchema>;
 
+type FormValues = UsernameSchema | PasswordSchema | EmailSchema;
+
 const stepSchemas = [usernameSchema, passwordSchema, emailSchema];
 
 export const FormSteps: React.FC = () => {
-  const { step, nextStep, prevStep, resetStep } = useFormStore();
+  const { step, nextStep, prevStep, resetStep, formValues, setFormValues } = useFormStore();
   const schema = stepSchemas[step - 1];
 
   const [showToast, setShowToast] = React.useState(false);
@@ -31,14 +32,21 @@ export const FormSteps: React.FC = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<UsernameSchema | PasswordSchema | EmailSchema>({
+  } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: formValues,
+    mode: "onChange",
   });
 
-  const onSubmit: SubmitHandler<UsernameSchema | PasswordSchema | EmailSchema> = async (data) => {
+  React.useEffect(() => {
+    reset(formValues);
+  }, [formValues, reset]);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(data);
+      setFormValues(data);
       if (step < stepSchemas.length) {
         nextStep();
       } else {
@@ -61,30 +69,7 @@ export const FormSteps: React.FC = () => {
     <div className="p-4 max-w-md mx-auto">
       {showForm ? (
         <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && (
-            <FormInput
-              type="text"
-              register={register}
-              name="username"
-              label="Username"
-              error={(errors as { username?: { message?: string } }).username?.message}
-            />
-          )}
-
-          {step === 2 && (
-            <FormInput
-              type="password"
-              register={register}
-              name="password"
-              label="Password"
-              error={(errors as { password?: { message?: string } }).password?.message}
-            />
-          )}
-
-          {step === 3 && (
-            <FormInput type="email" register={register} name="email" label="Email" error={(errors as { email?: { message?: string } }).email?.message} />
-          )}
-
+          <FormStepsFields step={step} register={register} errors={errors} />
           <FormStepsButtons step={step} isSubmitting={isSubmitting} prevStep={prevStep} nextStep={() => handleSubmit(onSubmit)()} />
         </form>
       ) : (

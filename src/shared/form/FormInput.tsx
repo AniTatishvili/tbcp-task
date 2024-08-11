@@ -1,9 +1,10 @@
 import React from "react";
 import { ErrorBox } from "./ErrorBox";
+import { useForm } from "react-hook-form";
 
 interface FormInputProps {
   type: string;
-  register: any;
+  register: ReturnType<typeof useForm>["register"];
   name: string;
   error?: string;
   label: string;
